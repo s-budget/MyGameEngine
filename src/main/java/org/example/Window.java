@@ -17,12 +17,27 @@ public class Window
     private String title;
     private long glfwWindow;
     private static Window window=null;
+    private static Scene currentScene;
     private Window()
     {
         width=600;
         height=600;
         title="MyGame";
 
+    }
+    public static void changeScene(int newScene)
+    {
+     if(newScene==0)
+     {
+         currentScene=new LevelEditorScene();
+     }else if(newScene==1)
+     {
+         currentScene=new LevelScene();
+     }
+     else
+     {
+         assert false: "UNknown scene"+ newScene;
+     }
     }
     public static Window get()
     {
@@ -77,11 +92,13 @@ public class Window
 
         glfwShowWindow(glfwWindow);
         GL.createCapabilities();
+        Window.changeScene(0);
     }
     private void loop()
     {
         float beginTime= Time.getTime();
-        float endTime=Time.getTime();
+        float endTime;
+        float dt=-1;
         System.out.println("Looping started");
         while(!glfwWindowShouldClose(glfwWindow))
         {
@@ -89,15 +106,12 @@ public class Window
             glClearColor(178f/255,229f/255,237f/255,1 );
 
             glClear(GL_COLOR_BUFFER_BIT);
-
-            /* if(KeyListener.isKeyPressed(GLFW_KEY_SPACE))
-            {
-                System.out.println("space ");
-            }*/
+            if(dt>0)
+                currentScene.update(dt);
 
             glfwSwapBuffers(glfwWindow);
             endTime=Time.getTime();
-            float dt= endTime-beginTime;
+            dt= endTime-beginTime;
             beginTime=endTime;
         }
     }
